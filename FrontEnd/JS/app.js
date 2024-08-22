@@ -40,11 +40,20 @@ async function getworks() {
   
       const json = await response.json();
       console.log(json);
+      for (let i = 0; i < json.length; i++) {
+        setfilter(json[i]);
+      }
       
     } catch (error) {
       console.error(error.message);
     }
   }
   getcategories()
+  
+  function setfilter(data) {
+    const div = document.createElement("div");
+    div.innerHTML=`${data.name}`
+    document.querySelector(".div-container").append(div);
+  }
   
   
