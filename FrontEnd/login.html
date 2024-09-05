@@ -9,7 +9,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
-	<script src="/Javascript-projet3/Portfolio-architecte-sophie-bluel/FrontEnd/JS/app.js" defer></script>
+	<script src="/Javascript-projet3/Portfolio-architecte-sophie-bluel/FrontEnd/JS/login.js" defer></script>
 </head>
 <body>
 <header>
@@ -26,16 +26,14 @@
 <main>
 	
 	<section id="contact">
-		<h2>Contact</h2>
-		<p>Vous avez un projet ? Discutons-en !</p>
+		<h2>Log in</h2>
 		<form action="#" method="post">
-			<label for="name">Nom</label>
-			<input type="text" name="name" id="name">
-			<label for="email">Email</label>
-			<input type="email" name="email" id="email">
-			<label for="message">Message</label>
-			<textarea name="message" id="message" cols="30" rows="10"></textarea>
-			<input type="submit" value="Envoyer">
+			<label for="email">E-mail</label>
+			<input type="text" name="email" id="email" required>
+			<label for="password">Mot de passe</label>
+			<input type="password" name="password" id="password"required>
+			<input type="submit" value="Se connecter">
+			<p><a class="forgotten" href="#">Mot de passe oublié</a></p>
 		</form>
 	</section>
 </main>
@@ -49,3 +47,4 @@
 </footer>
 </body>
 </html>
+<!--window.sessionStorage.setItem("token", le toke -->
