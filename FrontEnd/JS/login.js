@@ -27,23 +27,13 @@ document.getElementById('logbox').addEventListener('submit', async (event) => {
             errorbox.innerHTML = "Il y a eu une erreur de connexion";
             document.querySelector("form").prepend(errorbox);
         }
-        /*console.log(response);
-        let result = await response.json();
-        const token = result.token;
-        console.log(result.token);
-        console.log(response);
-        if (token) {
-          window.sessionStorage.setItem("authToken", token);
-          console.log("Token enregistré:", token);
-      } else {
-          console.error("Token non trouvé dans la réponse");
-      }*/
     }else{
       console.log(response);
       let result = await response.json();
       const token = result.token;
       console.log(result.token);
       console.log(response);
+      window.location.href = 'index.html';
       if (token) {
         window.sessionStorage.setItem("authToken", token);
         console.log("Token enregistré:", token);
