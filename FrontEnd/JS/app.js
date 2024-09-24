@@ -79,13 +79,34 @@ document.querySelector(".tous").addEventListener("click", () => getworks());
 function displayAdminMode() {
   if (sessionStorage.authToken) {
     console.log("ok");
+    const divContainer = document.querySelector('.div-container');
+    if (divContainer) {
+        divContainer.style.display = 'none';
+    } else {
+        console.error("L'élément avec la classe 'div-container' n'a pas été trouvé.");
+    }
     const editbanner = document.createElement("div");
     editbanner.className = "edit";
     editbanner.innerHTML = '<p><a href="#modal" class="js-modal"> <i class="fa-solid fa-pen-to-square"></i>Mode édition</a></p>';
     document.body.prepend(editbanner);
+    const titleElement = document.getElementById("edit-title"); // Assurez-vous que l'ID est correct
+    if (titleElement) {
+      const edittitle = document.createElement("span");
+      edittitle.className = "edit-title";
+      edittitle.innerHTML = '<i class="fa-regular fa-pen-to-square"></i></i> Modifier';
+      titleElement.appendChild(edittitle); // Ajout de l'élément
+    } else {
+      console.error("L'élément avec l'ID 'edit-title' n'a pas été trouvé.");
+    }
+    const authLink = document.getElementById("log");
+    if (log) {
+      log.innerHTML = '<a href="logout.html">logout</a>'; // Remplace le lien
+    } else {
+      console.error("L'élément avec l'ID 'auth-link' n'a pas été trouvé.");
+    }
   }
-
 }
+
 displayAdminMode();
 
 let modal = null
