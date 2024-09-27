@@ -19,7 +19,7 @@ async function getworks(filter) {
       for (let i = 0; i < json.length; i++) {
         setFigure(json[i]);
         setModalFigure(json[i]);
-       
+
       }
     }
   } catch (error) {
@@ -38,10 +38,46 @@ function setFigure(data) {
 }
 function setModalFigure(data) {
 
-  const figure = document.createElement("figure")
-  figure.innerHTML = `<img src=${data.imageUrl} alt=${data.title}>
-                        <figcaption>${data.title}</figcaption>`
+  const figure = document.createElement("figure");
+  figure.innerHTML = `
+  <div class="image-container">
+    <img src="${data.imageUrl}" alt="${data.title}">
+    <figcaption>${data.title}</figcaption>
+    <i class="fa-solid fa-trash-can trash-icon"></i>
+  </div>
+`;
+const trashIcon = figure.querySelector(".fa-solid.fa-trash-can.trash-icon");
+trashIcon.addEventListener("click", async function() {
+  const confirmed = confirm("Are you sure you want to delete this image?");
+  
+  if (confirmed) {
+    const authToken = sessionStorage.getItem("authToken");
 
+    if (!authToken) {
+      alert("You are not authorized to delete this image. Please log in.");
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:5678/api/works/${data.imageId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        
+        figure.remove();
+        alert("Image deleted successfully.");
+      } else {
+        alert("Failed to delete the image.");
+      }
+    } catch (error) {
+      console.error("Error deleting the image:", error);
+      alert("Error deleting the image. Please try again.");
+    }
+  }
+});
   document.querySelector(".gallery-modal").append(figure);
 }
 
@@ -81,26 +117,26 @@ function displayAdminMode() {
     console.log("ok");
     const divContainer = document.querySelector('.div-container');
     if (divContainer) {
-        divContainer.style.display = 'none';
+      divContainer.style.display = 'none';
     } else {
-        console.error("L'élément avec la classe 'div-container' n'a pas été trouvé.");
+      console.error("L'élément avec la classe 'div-container' n'a pas été trouvé.");
     }
     const editbanner = document.createElement("div");
     editbanner.className = "edit";
     editbanner.innerHTML = '<p><a href="#modal" class="js-modal"> <i class="fa-solid fa-pen-to-square"></i>Mode édition</a></p>';
     document.body.prepend(editbanner);
-    const titleElement = document.getElementById("edit-title"); // Assurez-vous que l'ID est correct
+    const titleElement = document.getElementById("edit-title");
     if (titleElement) {
       const edittitle = document.createElement("span");
       edittitle.className = "edit-title";
       edittitle.innerHTML = '<i class="fa-regular fa-pen-to-square"></i></i> Modifier';
-      titleElement.appendChild(edittitle); // Ajout de l'élément
+      titleElement.appendChild(edittitle);
     } else {
       console.error("L'élément avec l'ID 'edit-title' n'a pas été trouvé.");
     }
     const authLink = document.getElementById("log");
     if (log) {
-      log.innerHTML = '<a href="logout.html">logout</a>'; // Remplace le lien
+      log.innerHTML = '<a href="logout.html">logout</a>';
     } else {
       console.error("L'élément avec l'ID 'auth-link' n'a pas été trouvé.");
     }
@@ -110,7 +146,7 @@ function displayAdminMode() {
 displayAdminMode();
 
 let modal = null
-
+//pourquoi le modifier avec l'icone passe a travers la modale//
 const openmodal = function (e) {
   e.preventDefault()
   const target = document.querySelector(e.target.getAttribute('href'));
@@ -119,12 +155,12 @@ const openmodal = function (e) {
   target.setAttribute('aria-modal', 'true');
   modal = target
   modal.addEventListener('click', closemodal)
-  modal.querySelector('.js-modal-close').addEventListener('click',closemodal)
-  modal.querySelector('.js-modal-stop').addEventListener('click',stopPropagation)
+  modal.querySelector('.js-modal-close').addEventListener('click', closemodal)
+  modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
 }
 
-const closemodal = function(e) {
+const closemodal = function (e) {
   if (modal === null) return
   e.preventDefault()
   modal.style.display = "none"
@@ -134,11 +170,12 @@ const closemodal = function(e) {
   modal.querySelector(".js-modal-close").removeEventListener('click', closemodal)
   modal.querySelector(".js-modal-stop").removeEventListener('click', stopPropagation)
 
-  modal= null
+  modal = null
 
 }
-const stopPropagation = function(e) {
+const stopPropagation = function (e) {
   e.stopPropagation()
 }
-document.querySelectorAll('.js-modal').forEach(a => {a.addEventListener('click', openmodal)
+document.querySelectorAll('.js-modal').forEach(a => {
+  a.addEventListener('click', openmodal)
 })
