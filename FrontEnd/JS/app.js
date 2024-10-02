@@ -131,6 +131,14 @@ function displayAdminMode() {
       edittitle.className = "edit-title";
       edittitle.innerHTML = '<i class="fa-regular fa-pen-to-square"></i></i> Modifier';
       titleElement.appendChild(edittitle);
+      edittitle.addEventListener('click', function() {
+        const modalLink = document.querySelector('.js-modal');
+        if (modalLink) {
+          modalLink.click();  // Simule un clic sur le lien pour ouvrir la modale
+        } else {
+          console.error("La modale ou le lien pour l'ouvrir n'a pas été trouvé.");
+        }
+      });
     } else {
       console.error("L'élément avec l'ID 'edit-title' n'a pas été trouvé.");
     }
@@ -184,12 +192,18 @@ const closemodal = function (e) {
   modal.style.display = "none"
   modal.setAttribute('aria-hidden', 'true')
   modal.removeAttribute("aria-modal")
+  const titleElement = document.getElementById("edit-title");
+  if (titleElement) {
+    const edittitle = titleElement.querySelector(".edit-title");
+    if (edittitle) {
+      edittitle.style.display = ''; // Réafficher le span
+    }
   modal.removeEventListener('click', closemodal)
   modal.querySelector(".js-modal-close").removeEventListener('click', closemodal)
   modal.querySelector(".js-modal-stop").removeEventListener('click', stopPropagation)
 
   modal = null
-
+  }
 }
 const stopPropagation = function (e) {
   e.stopPropagation()
