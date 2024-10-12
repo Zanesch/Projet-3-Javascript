@@ -22,6 +22,12 @@ async function getworks(filter) {
 
       }
     }
+  //  async function handleDeleteWork() {
+      const deleteWorkBtns = document.querySelectorAll(".image-container");
+      deleteWorkBtns.forEach(btn => {
+          btn.addEventListener("click", deletework);
+      });
+ // }
   } catch (error) {
     console.error(error.message);
   }
@@ -40,44 +46,14 @@ function setModalFigure(data) {
 
   const figure = document.createElement("figure");
   figure.innerHTML = `
-  <div class="image-container">
+  <div class="image-container" id ="${data.id}">
     <img src="${data.imageUrl}" alt="${data.title}">
     <figcaption>${data.title}</figcaption>
     <i class="fa-solid fa-trash-can trash-icon"></i>
   </div>
 `;
-  const trashIcon = figure.querySelector(".fa-solid.fa-trash-can.trash-icon");
-  trashIcon.addEventListener("click", async function () {
-    const confirmed = confirm("Are you sure you want to delete this image?");
-
-    if (confirmed) {
-      const authToken = sessionStorage.getItem("authToken");
-
-      if (!authToken) {
-        alert("You are not authorized to delete this image. Please log in.");
-        return;
-      }
-      try {
-        const response = await fetch(`http://localhost:5678/api/works/${data.imageId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-          },
-        });
-
-        if (response.ok) {
-
-          figure.remove();
-          alert("Image deleted successfully.");
-        } else {
-          alert("Failed to delete the image.");
-        }
-      } catch (error) {
-        console.error("Error deleting the image:", error);
-        alert("Error deleting the image. Please try again.");
-      }
-    }
-  });
+  
+  ;
   document.querySelector(".gallery-modal").append(figure);
 }
 
@@ -134,7 +110,7 @@ function displayAdminMode() {
       edittitle.addEventListener('click', function() {
         const modalLink = document.querySelector('.js-modal');
         if (modalLink) {
-          modalLink.click();  // Simule un clic sur le lien pour ouvrir la modale
+          modalLink.click();
         } else {
           console.error("La modale ou le lien pour l'ouvrir n'a pas été trouvé.");
         }
@@ -146,15 +122,11 @@ function displayAdminMode() {
     if (authLink) {
       authLink.innerHTML = '<a href="#" id="logout-link">logout</a>';
 
-      // Ajouter un écouteur d'événement pour gérer la déconnexion
+      
       const logoutLink = document.getElementById("logout-link");
       logoutLink.addEventListener("click", function(event) {
-        event.preventDefault(); // Empêche le comportement par défaut du lien
-        
-        // Suppression des données d'authentification dans sessionStorage
+        event.preventDefault(); 
         sessionStorage.removeItem("authToken");
-
-        // Redirection vers la page de connexion
         window.location.href = "index.html";
       });
     } else {
@@ -181,7 +153,9 @@ const openmodal = function (e) {
     }
   modal = target
   modal.addEventListener('click', closemodal)
-  modal.querySelector('.js-modal-close').addEventListener('click', closemodal)
+  modal.querySelectorAll('.js-modal-close')
+  .forEach((e)=> e.addEventListener('click', closemodal));
+
   modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
 }
@@ -211,29 +185,75 @@ const stopPropagation = function (e) {
 document.querySelectorAll('.js-modal').forEach(a => {
   a.addEventListener('click', openmodal)
 })
+
+// deleteworks//
+//const trashCans = document.querySelectorAll(".fa-trash-can");
+  //  console.log(trashCans);
+  //  trashCans.forEach((e) => e.addEventListener("click", deleteworks));
+  /*async function handleDeleteWork() {
+    const deleteWorkBtns = document.querySelectorAll(".image-container");
+    deleteWorkBtns.forEach(btn => {
+        btn.addEventListener("click", deletework);
+    });
+}*/
+    
+async function deletework(e) {
+  e.preventDefault(e)
+  const id = e.currentTarget.id;
+  console.log(id);
+  const deleteApi = `http://localhost:5678/api/works/${id}`;
+  const token = sessionStorage.authToken;
+  let response = await fetch(deleteApi, {
+    method: "DELETE",
+    headers :{
+      Authorization: "Bearer " + token,
+    }
+  });
+  if (response.status == 401 || response.status == 500) {
+    const errorbox = document.createElement("div");
+    errorbox.className = "error-login";
+    errorbox.innerHTML = "il y a eu une erreur";
+    document.querySelector(".modal-button-container").prepend(errorbox);
+  }else {
+    let result = await response.json();
+    console.log(result);
+  }
+}
+//handleDeleteWork()
+
+
+
 //switch modale//
 const switchModale = function() {
-  document.querySelector(".modal-wrapper").innerHTML = `<div class="modal-wrapper js-modal-stop">
-			<div class="close-button">
-			<button class="js-modal-close"> <i class="fa-solid fa-xmark"></i></button>
-		</div>
-			<h3 id="titlemodal">Ajout Photo</h3>
+  document.querySelector(".modal-wrapper").innerHTML = `
+			<div class="modal-switch-container">
+      <button class="js-modal-back">
+      <i class="fa-solid fa-arrow-left"></i>
+      </button>
+			<button class="js-modal-close">
+       <i class="fa-solid fa-xmark"></i>
+       </button>
+		  </div>
+			<h3 >Ajout Photo</h3>
+      <div class="form">
       <form action="#" method="post">
-				<label for="name">Nom</label>
-				<input type="text" name="name" id="name">
-				<label for="email">Email</label>
-				<input type="email" name="email" id="email">
-				<label for="message">Message</label>
-				<textarea name="message" id="message" cols="30" rows="10"></textarea>
-				<input type="submit" value="Envoyer">
+				<label for="title">Titre</label>
+				<input type="text" name="title" id="title">
+				<label for="category">Categorie</label>
+				<input type="category" name="category" id="category">
+        <hr />
+				<input type="submit" value="Valider">
 			</form>
-			<div class="gallery-modal"></div>
-			<hr />
-			<div class="modal-button-container">
-				<button class="add-photo-button">Valider</button>
-			</div>
+      </div>
 		</div>`;
+    
 };
 
 const addphotobutton = document.querySelector(".add-photo-button");
 addphotobutton.addEventListener('click', switchModale);
+
+//back-modal
+document.querySelector(".js-modal-back").addEventListener("click", function() {
+  closemodal(); // Ferme la modale active
+  openmodal({target: {getAttribute: () => "#modal"}}); // Ouvre la modale précédente
+});

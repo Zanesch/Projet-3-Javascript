@@ -80,7 +80,7 @@ body {
 	background-color: white;
 	max-width: calc(100vh - 20px);
 	max-height: calc(100vh - 20px);
-	width: 600px;
+	width: 700px;
 	height: 70%;
 	padding: 20px;
 
@@ -96,6 +96,17 @@ body {
 .close-button {
 	display: flex;
 	justify-content: end;
+}
+.modal-switch-container {
+	display: flex;
+	justify-content: space-between;
+}
+.js-modal-back{
+	background-color: white;
+	border: none;
+	font-size: 18px;
+    font-weight: bold;
+	cursor: pointer;
 }
 .js-modal-close{
 	background-color: white;
@@ -284,34 +295,34 @@ li:hover {
 .gallery-modal img {
 	width: 100%;
 }
-#contact {
+.form {
 	width: 50%;
 margin: auto;
 }
-#contact > * {
+.form > * {
 	text-align: center;
 
 }
-#contact h2{
+.form h2{
 	margin-bottom: 20px;
 }
-#contact form {
+.form form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+.form input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+.form label {
 	margin: 2em 0 1em 0;
 }
-#contact textarea {
+.form textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
