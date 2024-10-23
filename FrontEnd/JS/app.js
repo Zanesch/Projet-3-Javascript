@@ -22,12 +22,13 @@ async function getworks(filter) {
 
       }
     }
-  //  async function handleDeleteWork() {
-      const deleteWorkBtns = document.querySelectorAll(".image-container");
-      deleteWorkBtns.forEach(btn => {
-          btn.addEventListener("click", deletework);
-      });
- // }
+    //  async function handleDeleteWork() {
+    const deleteWorkBtns = document.querySelectorAll(".trash-icon");
+    deleteWorkBtns.forEach(btn => {
+      btn.addEventListener("click", deletework);
+    });
+
+    // }
   } catch (error) {
     console.error(error.message);
   }
@@ -52,7 +53,7 @@ function setModalFigure(data) {
     <i class="fa-solid fa-trash-can trash-icon"></i>
   </div>
 `;
-  
+
   ;
   document.querySelector(".gallery-modal").append(figure);
 }
@@ -107,7 +108,7 @@ function displayAdminMode() {
       edittitle.className = "edit-title";
       edittitle.innerHTML = '<i class="fa-regular fa-pen-to-square"></i></i> Modifier';
       titleElement.appendChild(edittitle);
-      edittitle.addEventListener('click', function() {
+      edittitle.addEventListener('click', function () {
         const modalLink = document.querySelector('.js-modal');
         if (modalLink) {
           modalLink.click();
@@ -122,10 +123,10 @@ function displayAdminMode() {
     if (authLink) {
       authLink.innerHTML = '<a href="#" id="logout-link">logout</a>';
 
-      
+
       const logoutLink = document.getElementById("logout-link");
-      logoutLink.addEventListener("click", function(event) {
-        event.preventDefault(); 
+      logoutLink.addEventListener("click", function (event) {
+        event.preventDefault();
         sessionStorage.removeItem("authToken");
         window.location.href = "index.html";
       });
@@ -151,14 +152,14 @@ const openmodal = function (e) {
     if (edittitle) {
       edittitle.style.display = 'none'; // Hide the span
     }
-  modal = target
-  modal.addEventListener('click', closemodal)
-  modal.querySelectorAll('.js-modal-close')
-  .forEach((e)=> e.addEventListener('click', closemodal));
+    modal = target
+    modal.addEventListener('click', closemodal)
+    modal.querySelectorAll('.js-modal-close')
+      .forEach((e) => e.addEventListener('click', closemodal));
 
-  modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
+    modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 
-}
+  }
 }
 const closemodal = function (e) {
   if (modal === null) return
@@ -172,11 +173,11 @@ const closemodal = function (e) {
     if (edittitle) {
       edittitle.style.display = ''; // Réafficher le span
     }
-  modal.removeEventListener('click', closemodal)
-  modal.querySelector(".js-modal-close").removeEventListener('click', closemodal)
-  modal.querySelector(".js-modal-stop").removeEventListener('click', stopPropagation)
+    modal.removeEventListener('click', closemodal)
+    modal.querySelector(".js-modal-close").removeEventListener('click', closemodal)
+    modal.querySelector(".js-modal-stop").removeEventListener('click', stopPropagation)
 
-  modal = null
+    modal = null
   }
 }
 const stopPropagation = function (e) {
@@ -186,74 +187,68 @@ document.querySelectorAll('.js-modal').forEach(a => {
   a.addEventListener('click', openmodal)
 })
 
-// deleteworks//
-//const trashCans = document.querySelectorAll(".fa-trash-can");
-  //  console.log(trashCans);
-  //  trashCans.forEach((e) => e.addEventListener("click", deleteworks));
-  /*async function handleDeleteWork() {
-    const deleteWorkBtns = document.querySelectorAll(".image-container");
-    deleteWorkBtns.forEach(btn => {
-        btn.addEventListener("click", deletework);
-    });
-}*/
-    
+
+
 async function deletework(e) {
-  e.preventDefault(e)
-  const id = e.currentTarget.id;
-  console.log(id);
+  e.preventDefault();  // Empêche le comportement par défaut (comme la fermeture ou le rechargement)
+
+  // Utiliser closest pour remonter au parent ayant l'ID
+  const imageContainer = e.currentTarget.closest('.image-container');
+  const id = imageContainer.id;
+  console.log(id);  // Vérification si l'ID est bien récupéré
+
   const deleteApi = `http://localhost:5678/api/works/${id}`;
   const token = sessionStorage.authToken;
-  let response = await fetch(deleteApi, {
-    method: "DELETE",
-    headers :{
-      Authorization: "Bearer " + token,
+
+  try {
+    let response = await fetch(deleteApi, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + token,
+      }
+    });
+
+    if (response.ok) {
+      console.log("Suppression réussie");
+
+
+      imageContainer.remove();
+
+    } else if (response.status === 401 || response.status === 500) {
+      const errorbox = document.createElement("div");
+      errorbox.className = "error-login";
+      errorbox.innerHTML = "Il y a eu une erreur";
+      document.querySelector(".modal-button-container").prepend(errorbox);
     }
-  });
-  if (response.status == 401 || response.status == 500) {
-    const errorbox = document.createElement("div");
-    errorbox.className = "error-login";
-    errorbox.innerHTML = "il y a eu une erreur";
-    document.querySelector(".modal-button-container").prepend(errorbox);
-  }else {
-    let result = await response.json();
-    console.log(result);
+
+  } catch (error) {
+    console.error("Erreur lors de la suppression:", error);
   }
 }
+
+
 //handleDeleteWork()
 
 
 
 //switch modale//
-const switchModale = function() {
-  document.querySelector(".modal-wrapper").innerHTML = `
-			<div class="modal-switch-container">
-      <button class="js-modal-back">
-      <i class="fa-solid fa-arrow-left"></i>
-      </button>
-			<button class="js-modal-close">
-       <i class="fa-solid fa-xmark"></i>
-       </button>
-		  </div>
-			<h3 >Ajout Photo</h3>
-      <div class="form">
-      <form action="#" method="post">
-				<label for="title">Titre</label>
-				<input type="text" name="title" id="title">
-				<label for="category">Categorie</label>
-				<input type="category" name="category" id="category">
-        <hr />
-				<input type="submit" value="Valider">
-			</form>
-      </div>
-		</div>`;
-    
-};
+const addPhotoButton = document.querySelector(".add-photo-button");
+const backButton = document.querySelector(".js-modal-back");
 
-const addphotobutton = document.querySelector(".add-photo-button");
-addphotobutton.addEventListener('click', switchModale);
+addPhotoButton.addEventListener("click", toggleModal);
+backButton.addEventListener("click", toggleModal);
 
-//back-modal
-document.querySelector(".js-modal-back").addEventListener("click", function() {
-  closemodal(); // Ferme la modale active
-  openmodal({target: {getAttribute: () => "#modal"}}); // Ouvre la modale précédente
-});
+function toggleModal() {
+  const modalgallery = document.querySelector(".modal-gallery");
+  const addModal = document.querySelector(".add-modal");
+
+  if (modalgallery.style.display === "block" || modalgallery.style.display === "") {
+    modalgallery.style.display = "none";
+    addModal.style.display = "block";
+  } else {
+    modalgallery.style.display = "block";
+    addModal.style.display = "none";
+  }
+}
+
+
