@@ -44,9 +44,10 @@
 				</div>
 				<h3>Ajout Photo</h3>
 				<div class="form">
-					<form action="#" method="post">
+					<form action="#" id="picture-form" method="post">
 						<div class="file-section">
-							<div><i class="fa-regular fa-image"></i></div>
+							<div id="load-picture"></div>
+							<div class="icon-container"><i class="fa-regular fa-image"></i></div>
 							<label for="file">+ Ajouter Photo</i></label>
 							<input type="file" id="file" name="file" accept="image/png, image/jpeg" />
 							<p>jpg, png: 4mo max</p>
@@ -54,10 +55,12 @@
 						<label for="title">Titre</label>
 						<input type="text" name="title" id="title">
 						<label for="category">Categorie</label>
+
+						
 						<select id="category" name="category">
-							<option value="object">objects</option>
-							<option value="appartement">appartements</option>
-							<option value="Hotel">Hotels & Restaurants</option>
+							<option value="1">Objects</option>
+							<option value="2">Appartements</option>
+							<option value="3">Hotels & Restaurants</option>
 						  </select>
 						<hr />
 						<input type="submit" value="Valider">

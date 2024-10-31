@@ -250,5 +250,119 @@ function toggleModal() {
     addModal.style.display = "none";
   }
 }
+// ajout photo input //
 
 
+
+document.getElementById('file').addEventListener('change', function(event) {
+  const fileInput = event.target;
+  const file = fileInput.files[0]; 
+  
+  if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = "Selected image";
+          img.style.maxWidth = "100%"; 
+
+          const preview = document.getElementById('load-picture');
+          preview.innerHTML = ''; 
+          preview.appendChild(img);
+      }
+
+      reader.readAsDataURL(file);
+      document.querySelector('label[for="file"]').style.display = 'none';
+      document.querySelector('.file-section p').style.display = 'none';
+      document.querySelector('.icon-container').style.display = 'none';
+
+  } else {
+      alert('Please select a jpg or png image');
+  }
+});
+
+ const titleInput= document.getElementById("title");
+ const categorySelect = document.getElementById("category");
+
+categorySelect.addEventListener("change", function() {
+    const selectedValue = categorySelect.value;
+
+    const selectedText = categorySelect.options[categorySelect.selectedIndex].text;
+    console.log("Valeur sélectionnée :", selectedValue);
+    console.log("Texte sélectionné :", selectedText);
+});
+
+ let titleValue = "";
+ let selectedValue ="1";
+
+ document.getElementById("category").addEventListener("change", function (){
+  selectedValue = this.value;
+
+ });
+ titleInput.addEventListener("input", function() {
+  titleValue = titleInput.value;
+  console.log("titre actuel:", titleValue);
+});
+
+const pictureForm = document.getElementById("picture-form");
+
+if (pictureForm) {
+  pictureForm.addEventListener("submit", handleSubmit);
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+
+  const titleInput = document.getElementById("title");
+  if (!titleInput) {
+    console.error("L'élément avec l'ID 'title' est introuvable.");
+    return;
+  }
+
+  const titleValue = titleInput.value;
+  const hasImage = document.querySelector("#load-picture img");
+
+  if (titleValue && hasImage) {
+    console.log("Titre et image sont présents.");
+  } else {
+    console.log("Le titre ou l'image est manquant.");
+    return; // Si le titre ou l'image est manquant, on arrête ici
+  }
+
+  const formData = new FormData();
+  const fileInput = document.getElementById('file'); // Assurez-vous que l'input file existe
+  formData.append("image", fileInput.files[0]); // Passez le fichier image lui-même
+  formData.append("title", titleValue);
+  formData.append("category", selectedValue);
+
+  const token = sessionStorage.authToken;
+
+  formData.forEach((value, key) => {
+    console.log(key, value);
+  });
+
+  let response = await fetch("http://localhost:5678/api/works", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + token, // Ne pas définir Content-Type pour FormData
+    },
+    body: formData,
+  });
+
+  if (response.status !== 200) {
+    let existingErrorBox = document.querySelector(".error-login");
+    if (!existingErrorBox) {
+      const errorbox = document.createElement("div");
+      errorbox.className = "error-login";
+      errorbox.innerHTML = "Il y a eu une erreur de connexion";
+      document.querySelector("form").prepend(errorbox);
+    } else {
+      let result = await response.json();
+      console.log(result);
+    }
+  }
+}
+
+
+document.getElementById("picture-form").addEventListener("submit", handleSubmit);
