@@ -311,6 +311,7 @@ if (pictureForm) {
   pictureForm.addEventListener("submit", handleSubmit);
 }
 
+
 async function handleSubmit(event) {
   event.preventDefault();
 
@@ -363,6 +364,32 @@ async function handleSubmit(event) {
     }
   }
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const titleInput = document.getElementById("title");
+  const categorySelect = document.getElementById("category");
+  const submitButton = document.querySelector("input[type='submit']");
+
+  // Définition de l'état initial du bouton
+  function updateButtonState() {
+    if (titleInput.value.trim() !== "" && categorySelect.value !== "") {
+      submitButton.style.backgroundColor = "#1D6154";  // Bouton vert
+      submitButton.style.cursor = "pointer";
+      submitButton.disabled = false;
+    } else {
+      submitButton.style.backgroundColor = "grey";   // Bouton gris
+      submitButton.style.cursor = "not-allowed";
+      submitButton.disabled = true;
+    }
+  }
+
+  // Initialisation de l'état du bouton au chargement de la page
+  updateButtonState();
+
+  // Ajout des écouteurs d'événements pour surveiller les changements
+  titleInput.addEventListener("input", updateButtonState);
+  categorySelect.addEventListener("change", updateButtonState);
+});
+
 
 
 document.getElementById("picture-form").addEventListener("submit", handleSubmit);
