@@ -1,6 +1,6 @@
 
 async function getworks(filter) {
-  document.querySelector(".gallery").innerHTML = "";
+  //document.querySelector(".gallery").innerHTML = "";//
   const url = "http://localhost:5678/api/works";
   try {
     const response = await fetch(url);
@@ -22,13 +22,11 @@ async function getworks(filter) {
 
       }
     }
-    //  async function handleDeleteWork() {
     const deleteWorkBtns = document.querySelectorAll(".trash-icon");
     deleteWorkBtns.forEach(btn => {
       btn.addEventListener("click", deletework);
     });
 
-    // }
   } catch (error) {
     console.error(error.message);
   }
@@ -82,9 +80,28 @@ function setfilter(data) {
   const div = document.createElement("div");
   div.classname = data.id;
   div.addEventListener("click", () => getworks(data.id));
+  
   div.innerHTML = `${data.name}`
   document.querySelector(".div-container").append(div);
 }
+const items = document.querySelectorAll('.div-container > *');
+const tous = document.querySelector('.tous');
+
+function clearActiveState() {
+    items.forEach(item => item.classList.remove('active'));
+}
+
+items.forEach((item) => {
+    item.addEventListener('click', function() {
+        if (item === tous) {
+            clearActiveState();
+        } else {
+            clearActiveState();
+            item.classList.add('active');
+        }
+    });
+});
+
 
 
 document.querySelector(".tous").addEventListener("click", () => getworks());
@@ -188,11 +205,11 @@ document.querySelectorAll('.js-modal').forEach(a => {
 })
 
 
+//fonction delete//
 
+// Fonction de suppression d'une image
 async function deletework(e) {
-  e.preventDefault();  // Empêche le comportement par défaut (comme la fermeture ou le rechargement)
-
-  // Utiliser closest pour remonter au parent ayant l'ID
+  e.preventDefault();
   const imageContainer = e.currentTarget.closest('.image-container');
   const id = imageContainer.id;
   console.log(id);  // Vérification si l'ID est bien récupéré
@@ -211,8 +228,16 @@ async function deletework(e) {
     if (response.ok) {
       console.log("Suppression réussie");
 
-
+      // Suppression de l'image uniquement dans `.gallery-modal`
       imageContainer.remove();
+
+      // Suppression de l'image correspondante dans `.gallery`
+      const galleryImages = document.querySelectorAll(".gallery figure");
+      galleryImages.forEach((figure) => {
+        if (figure.querySelector("img").src === imageContainer.querySelector("img").src) {
+          figure.remove();
+        }
+      });
 
     } else if (response.status === 401 || response.status === 500) {
       const errorbox = document.createElement("div");
@@ -225,9 +250,6 @@ async function deletework(e) {
     console.error("Erreur lors de la suppression:", error);
   }
 }
-
-
-//handleDeleteWork()
 
 
 
@@ -332,36 +354,46 @@ async function handleSubmit(event) {
   }
 
   const formData = new FormData();
-  const fileInput = document.getElementById('file'); // Assurez-vous que l'input file existe
-  formData.append("image", fileInput.files[0]); // Passez le fichier image lui-même
+  const fileInput = document.getElementById('file');
+  formData.append("image", fileInput.files[0]);
   formData.append("title", titleValue);
   formData.append("category", selectedValue);
 
   const token = sessionStorage.authToken;
 
-  formData.forEach((value, key) => {
-    console.log(key, value);
-  });
-
   let response = await fetch("http://localhost:5678/api/works", {
     method: "POST",
     headers: {
-      Authorization: "Bearer " + token, // Ne pas définir Content-Type pour FormData
+      Authorization: "Bearer " + token,
     },
     body: formData,
   });
 
-  if (response.status !== 200) {
+  if (response.ok) {
+    const newWork = await response.json();  // On récupère les données de la nouvelle image
+    console.log("Ajout réussi:", newWork);
+
+    // Ajouter l'image dans la galerie et la modale sans recharger toute la page
+    setFigure(newWork);
+    setModalFigure(newWork);
+
+    // Optionnel : Vider le formulaire après ajout
+    titleInput.value = '';
+    fileInput.value = '';
+    document.querySelector("#load-picture").innerHTML = '';
+    document.querySelector('label[for="file"]').style.display = '';
+    document.querySelector('.file-section p').style.display = '';
+    document.querySelector('.icon-container').style.display = '';
+
+  } else {
     let existingErrorBox = document.querySelector(".error-login");
     if (!existingErrorBox) {
       const errorbox = document.createElement("div");
       errorbox.className = "error-login";
       errorbox.innerHTML = "Il y a eu une erreur de connexion";
       document.querySelector("form").prepend(errorbox);
-    } else {
-      let result = await response.json();
-      console.log(result);
     }
+    console.error("Erreur lors de l'ajout :", await response.json());
   }
 }
 document.addEventListener("DOMContentLoaded", function () {
@@ -369,23 +401,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const categorySelect = document.getElementById("category");
   const submitButton = document.querySelector("input[type='submit']");
 
-  // Définition de l'état initial du bouton
   function updateButtonState() {
     if (titleInput.value.trim() !== "" && categorySelect.value !== "") {
-      submitButton.style.backgroundColor = "#1D6154";  // Bouton vert
+      submitButton.style.backgroundColor = "#1D6154";  
       submitButton.style.cursor = "pointer";
       submitButton.disabled = false;
     } else {
-      submitButton.style.backgroundColor = "grey";   // Bouton gris
+      submitButton.style.backgroundColor = "grey";   
       submitButton.style.cursor = "not-allowed";
       submitButton.disabled = true;
     }
   }
 
-  // Initialisation de l'état du bouton au chargement de la page
   updateButtonState();
 
-  // Ajout des écouteurs d'événements pour surveiller les changements
   titleInput.addEventListener("input", updateButtonState);
   categorySelect.addEventListener("change", updateButtonState);
 });
